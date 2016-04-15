@@ -1,9 +1,11 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Zaj0222.Models;
+using Zaj0222.ViewModel;
 
 namespace Zaj0222.Controllers
 {
@@ -17,7 +19,7 @@ namespace Zaj0222.Controllers
                 return View(context.Customers.ToArray());
             }
         }
-
+        [HttpGet]
         public ActionResult Edit(string id)
         {
             using (var context = new NorthwindModel())
@@ -25,39 +27,30 @@ namespace Zaj0222.Controllers
                 var customer = context.Customers.FirstOrDefault(x => x.CustomerID == id);
                 if (customer !=null)
                 {
-                    return View(customer);
-                }
-                else
-                {
-                    return RedirectToAction("Index");
-                }
+                    var viewModel = Mapper.Map<CustomerViewModel>(customer);
+                    return View(viewModel);
+                }                
+                return RedirectToAction("Index");
             }
-
         }
-
         [HttpPost]
-        public ActionResult Edit(Customers customer)
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(CustomerViewModel viewModel)
         {
             if (ModelState.IsValid) //validacja!!!!!!
             {
                 using (var context = new NorthwindModel())
                 {
-                    var dbCustomer = context.Customers.FirstOrDefault(x => x.CustomerID == customer.CustomerID);
-
-                    if (dbCustomer != null)
+                    var customer = context.Customers.FirstOrDefault(x => x.CustomerID == viewModel.CustomerID);
+                    if (customer != null)
                     {
-                        dbCustomer.CompanyName = customer.CompanyName;
-                        dbCustomer.ContactName = customer.ContactName;
-                        dbCustomer.City = customer.City;
-                        //..
+                        Mapper.Map(viewModel, customer);
                         context.SaveChanges();
                     }
-
-                     return HttpNotFound();
-
+                    return RedirectToAction("Index");
                 }
             }
-            return View(customer);
+            return View(viewModel);
         }
     }
 }
