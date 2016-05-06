@@ -1,4 +1,6 @@
-﻿@model Zaj0222.ViewModel.CustomerViewModel
+﻿
+
+@model Zaj0222.ViewModel.CustomerViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -107,3 +109,8 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    }
+
